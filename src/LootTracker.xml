@@ -1,0 +1,36 @@
+<GuiXml>
+  <Controls>
+    <Label name="LootTrackerIndexTemplate" font="ZoFontWinT2" virtual="true">
+      <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+    </Label>
+
+    <TopLevelControl name="LootTrackerWindow" mouseEnabled="true" movable="true"
+      clampToScreen="true" resizeHandleSize="8">
+      <DimensionConstraints minX="100" minY="50" />
+
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontWinT2" text="Loot Tracker">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+        </Label>
+
+        <Line name="$(parent)Line">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="30" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="30" />
+        </Line>
+
+        <Control name="$(parent)Index" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" offsetX="20" offsetY="40" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-30" />
+        </Control>
+
+        <Label name="$(parent)TotalCoins" font="ZoFontWinT2">
+          <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-10" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
