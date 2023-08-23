@@ -68,6 +68,7 @@ end
 local function reset()
     for k in pairs(loots) do
         loots[k].quantity = 0
+        loots[k].groupQuantity = 0
     end
 
     updateLootTrackerUI()
