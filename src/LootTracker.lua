@@ -1,18 +1,20 @@
 local loots = {
-    [150731] = { itemName = "Dragon's Blood ", quantity = 0, unitPrice = 4599 },
-    [150671] = { itemName = "Dragon Rheum   ", quantity = 0, unitPrice = 9199 },
+    [150731] = { itemName = "Dragon's Blood ", quantity = 0, groupQuantity = 0, unitPrice = 4599 },
+    [150671] = { itemName = "Dragon Rheum   ", quantity = 0, groupQuantity = 0, unitPrice = 9199 },
 }
 local window = LootTrackerWindow
 local saveData = nil
 
 local function updateTotalCoins()
     local total = 0
+    local groupTotal = 0
     for _, v in pairs(loots) do
         total = total + (v.quantity * v.unitPrice);
+        groupTotal = groupTotal + (v.groupQuantity * v.unitPrice);
     end
     
     local totalCoinLabel = window:GetNamedChild("TotalCoins")
-    totalCoinLabel:SetText("Total value     : " .. total )
+    totalCoinLabel:SetText("Total value     : " .. total .. " / " .. groupTotal )
 end
 
 local function updateLootTrackerUI()
@@ -37,14 +39,18 @@ local function saveWindowRect()
     updateLootTrackerUI()
 end
 
-function LootTracker.OnLootReceived(eventId, receivedBy, itemName, quantity, soundCategory, lootType, self,
+function LootTracker.OnLootReceived(eventId, receivedBy, itemName, quantity, soundCategory, lootType, mine,
                                     isPickpocketLoot, questItemIcon, itemId, isStolen)
     if loots[itemId] == nil then
         return
-        -- loots[itemId] = { quantity = 0, itemName = itemName }w
+        -- loots[itemId] = { quantity = 0, itemName = itemName }
     end
 
-    loots[itemId].quantity = loots[itemId].quantity + quantity
+    if mine then
+        loots[itemId].quantity = loots[itemId].quantity + quantity
+    end
+    
+    loots[itemId].groupQuantity = loots[itemId].groupQuantity + quantity
 
     updateLootTrackerUI()
 end
@@ -56,7 +62,7 @@ function LootTracker.OnExperienceGain(eventId, reason, level, previousExperience
 end
 
 local function InitializeRow(control, data)
-    control:SetText(data.itemName .. ": " .. data.quantity)
+    control:SetText(data.itemName .. ": " .. data.quantity .. " / " .. data.groupQuantity)
 end
 
 local function reset()
