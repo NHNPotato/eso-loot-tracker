@@ -1,3 +1,4 @@
+local timer = 0
 local loots = {
     [150731] = { itemName = "Dragon's Blood ", quantity = 0, groupQuantity = 0, unitPrice = 4599 },
     [150671] = { itemName = "Dragon Rheum   ", quantity = 0, groupQuantity = 0, unitPrice = 9199 },
@@ -12,9 +13,9 @@ local function updateTotalCoins()
         total = total + (v.quantity * v.unitPrice);
         groupTotal = groupTotal + (v.groupQuantity * v.unitPrice);
     end
-    
+
     local totalCoinLabel = window:GetNamedChild("TotalCoins")
-    totalCoinLabel:SetText("Total value     : " .. total .. " / " .. groupTotal )
+    totalCoinLabel:SetText("Total value     : " .. total .. " / " .. groupTotal)
 end
 
 local function updateLootTrackerUI()
@@ -49,7 +50,7 @@ function LootTracker.OnLootReceived(eventId, receivedBy, itemName, quantity, sou
     if mine then
         loots[itemId].quantity = loots[itemId].quantity + quantity
     end
-    
+
     loots[itemId].groupQuantity = loots[itemId].groupQuantity + quantity
 
     updateLootTrackerUI()
@@ -66,6 +67,8 @@ local function InitializeRow(control, data)
 end
 
 local function reset()
+    timer = 0
+
     for k in pairs(loots) do
         loots[k].quantity = 0
         loots[k].groupQuantity = 0
@@ -74,8 +77,22 @@ local function reset()
     updateLootTrackerUI()
 end
 
+local function OnUpdateTimer()
+    timer = timer + 1
+    local hours = math.floor(timer / 3600)
+    local remainingSeconds = timer % 3600
+    local minutes = math.floor(remainingSeconds / 60)
+    remainingSeconds = remainingSeconds % 60
+
+    window:GetNamedChild("Title"):SetText("Loot Tracker (" ..
+    string.format("%02d:%02d:%02d", hours, minutes, remainingSeconds) .. ")")
+end
+
 function LootTracker.Load()
     saveData = LootTracker.saveData
+
+    -- start timer
+    EVENT_MANAGER:RegisterForUpdate(LootTracker.name, 1000, OnUpdateTimer)
 
     if saveData.window then
         window:ClearAnchors()
