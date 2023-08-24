@@ -1,4 +1,5 @@
 local timer = 0
+local timerStart = 0
 local loots = {
     [150731] = { itemName = "Dragon's Blood ", quantity = 0, groupQuantity = 0, unitPrice = 4599 },
     [150671] = { itemName = "Dragon Rheum   ", quantity = 0, groupQuantity = 0, unitPrice = 9199 },
@@ -68,6 +69,7 @@ end
 
 local function reset()
     timer = 0
+    timerStart = GetGameTimeSeconds()
 
     for k in pairs(loots) do
         loots[k].quantity = 0
@@ -78,7 +80,7 @@ local function reset()
 end
 
 local function OnUpdateTimer()
-    timer = timer + 1
+    timer = GetGameTimeSeconds() - timerStart
     local hours = math.floor(timer / 3600)
     local remainingSeconds = timer % 3600
     local minutes = math.floor(remainingSeconds / 60)
@@ -90,6 +92,8 @@ end
 
 function LootTracker.Load()
     saveData = LootTracker.saveData
+    timer = 0
+    timerStart = GetGameTimeSeconds()
 
     -- start timer
     EVENT_MANAGER:RegisterForUpdate(LootTracker.name, 1000, OnUpdateTimer)
