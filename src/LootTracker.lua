@@ -15,7 +15,18 @@ local function updateTotalCoins()
     end
 
     local totalCoinLabel = window:GetNamedChild("TotalCoins")
+    local coinsPerMinuteLabel = window:GetNamedChild("CoinsPerMinute")
+    local timeInMinute = math.ceil(timer / 60);
+    if timeInMinute <= 0 then
+        timeInMinute = 1;
+    end
+    local coinPerMinute = math.floor(total / timeInMinute);
     totalCoinLabel:SetText("Total value     : " .. total .. " / " .. groupTotal)
+    local timeLabel = " minute"
+    if timeInMinute == 0 then
+    timeLabel = " minutes"
+    end
+    coinsPerMinuteLabel:SetText(coinPerMinute .. " / minute over " .. timeInMinute .. timeLabel)
 end
 
 local function updateLootTrackerUI()
@@ -86,6 +97,10 @@ local function OnUpdateTimer()
 
     window:GetNamedChild("Title"):SetText("Loot Tracker (" ..
     string.format("%02d:%02d:%02d", hours, minutes, remainingSeconds) .. ")")
+
+    if timer > 1 and timer % 60 == 0 then
+        updateTotalCoins()
+    end
 end
 
 function LootTracker.Load()

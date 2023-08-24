@@ -24,10 +24,13 @@
 
         <Control name="$(parent)Index" inherits="ZO_ScrollList">
           <Anchor point="TOPLEFT" offsetX="20" offsetY="40" />
-          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-30" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-50" />
         </Control>
 
         <Label name="$(parent)TotalCoins" font="ZoFontWinT2">
+          <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-30" />
+        </Label>
+        <Label name="$(parent)CoinsPerMinute" font="ZoFontWinT2">
           <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-10" />
         </Label>
       </Controls>
