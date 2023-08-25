@@ -11,9 +11,8 @@
 
 lib/Constants.lua
 
-src/LootTracker.xml
+src/MainWindow.lua
+src/MainWindow.xml
 src/LootTracker.lua
-
-lib/Events.lua
 
 LootTracker.lua

@@ -1,0 +1,170 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="LootTrackerMainWindow" mouseEnabled="true" movable="true" clampToScreen="true" hidden="true">
+      <Dimensions x="300" y="230" />
+
+      <Controls>
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontWinT2" text="Loot Tracker">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+        </Label>
+
+        <Line name="$(parent)Line">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="30" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="30" />
+        </Line>
+
+        <!-- Loots Table Headers -->
+        <Control name="$(parent)Headers">
+          <Dimensions x="300" y="20" />
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="40" />
+
+          <Controls>
+            <Label name="$(parent)Title" font="ZoFontWinT2" text="Item Name">
+              <Dimensions x="120" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="10" offsetY="0" />
+            </Label>
+            
+            <Label name="$(parent)Quantity" font="ZoFontWinT2" text="Qty">
+              <Dimensions x="60" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="140" offsetY="0" />
+            </Label>
+            
+            <Label name="$(parent)GroupQuantity" font="ZoFontWinT2" text="Group">
+              <Dimensions x="60" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="210" offsetY="0" />
+            </Label>
+            
+            <Control name="$(parent)Actions" font="ZoFontWinT2" hidden="true">
+              <Dimensions x="60" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+            </Control>
+          </Controls>
+        </Control>
+
+        <!-- Loots Table -->
+        <Control name="$(parent)LootsTable" inherits="ZO_ScrollList">
+          <Dimensions x="290" y="100"/>
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="60" />
+        </Control>
+
+        <!-- More Info -->
+        <Control name="$(parent)MoreInfo">
+          <Dimensions x="300" y="60"/>
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="160" />
+
+          <Controls>
+            <Control name="$(parent)TotalLoots">
+              <Dimensions x="300" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontWinT2" text="Total loots:">
+                  <Dimensions x="120" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Personal" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="140" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Group" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="210" offsetY="0" />
+                </Label>
+            
+                <Control name="$(parent)Actions" font="ZoFontWinT2" hidden="true">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+                </Control>
+              </Controls>
+            </Control>
+            
+            <Control name="$(parent)SellValue">
+              <Dimensions x="300" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="0" offsetY="20" />
+
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontWinT2" text="Sell value:">
+                  <Dimensions x="120" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Personal" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="140" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Group" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="210" offsetY="0" />
+                </Label>
+            
+                <Control name="$(parent)Actions" font="ZoFontWinT2" hidden="true">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+                </Control>
+              </Controls>
+            </Control>
+            
+            <Control name="$(parent)GainOverTime">
+              <Dimensions x="300" y="20"/>
+              <Anchor point="TOPLEFT" offsetX="0" offsetY="40" />
+
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontWinT2" text="Gold per minute:">
+                  <Dimensions x="140" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="10" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Personal" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="140" offsetY="0" />
+                </Label>
+                
+                <Label name="$(parent)Group" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="210" offsetY="0" />
+                </Label>
+            
+                <Control name="$(parent)Actions" font="ZoFontWinT2" hidden="true">
+                  <Dimensions x="60" y="20"/>
+                  <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+                </Control>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Loots Table Row Template-->
+    <Control name="LootTrackerLootsTableRowTemplate" virtual="true">
+      <Controls>
+        <Label name="$(parent)Title" font="ZoFontWinT2">
+          <Dimensions x="120" y="20"/>
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="0" />
+        </Label>
+        
+        <Label name="$(parent)Quantity" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+          <Dimensions x="60" y="20"/>
+          <Anchor point="TOPLEFT" offsetX="140" offsetY="0" />
+        </Label>
+        
+        <Label name="$(parent)GroupQuantity" font="ZoFontWinT2" horizontalAlignment="RIGHT">
+          <Dimensions x="60" y="20"/>
+          <Anchor point="TOPLEFT" offsetX="210" offsetY="0" />
+        </Label>
+            
+        <Control name="$(parent)Actions" font="ZoFontWinT2" hidden="true">
+          <Dimensions x="60" y="20"/>
+          <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+        </Control>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

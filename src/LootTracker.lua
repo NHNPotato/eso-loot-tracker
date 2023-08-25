@@ -1,71 +1,21 @@
-local timer = 0
-local timerStart = 0
-local loots = {
-    [150731] = { itemName = "Dragon's Blood ", quantity = 0, groupQuantity = 0, unitPrice = 4599 },
-    [150671] = { itemName = "Dragon Rheum   ", quantity = 0, groupQuantity = 0, unitPrice = 9199 },
-}
-local window = LootTrackerWindow
-local saveData = nil
-
-local function updateTotalCoins()
-    local total = 0
-    local groupTotal = 0
-    for _, v in pairs(loots) do
-        total = total + (v.quantity * v.unitPrice);
-        groupTotal = groupTotal + (v.groupQuantity * v.unitPrice);
-    end
-
-    local totalCoinLabel = window:GetNamedChild("TotalCoins")
-    local coinsPerMinuteLabel = window:GetNamedChild("CoinsPerMinute")
-    local timeInMinute = math.ceil(timer / 60);
-    if timeInMinute <= 0 then
-        timeInMinute = 1;
-    end
-    local coinPerMinute = math.floor(total / timeInMinute);
-    totalCoinLabel:SetText("Total value     : " .. total .. " / " .. groupTotal)
-    local timeLabel = " minute"
-    if timeInMinute == 0 then
-    timeLabel = " minutes"
-    end
-    coinsPerMinuteLabel:SetText(coinPerMinute .. " / minute over " .. timeInMinute .. timeLabel)
-end
-
-local function updateLootTrackerUI()
-    local indexContainer = window:GetNamedChild("Index")
-    local scrollData = ZO_ScrollList_GetDataList(indexContainer)
-    ZO_ScrollList_Clear(indexContainer)
-
-    for _, v in pairs(loots) do
-        scrollData[#scrollData + 1] = ZO_ScrollList_CreateDataEntry(1, v)
-    end
-
-    ZO_ScrollList_Commit(indexContainer)
-
-    updateTotalCoins()
-end
-
-local function saveWindowRect()
-    local x, y = window:GetScreenRect()
-    local width, height = window:GetDimensions()
-    saveData.window = { x = x, y = y, width = width, height = height }
-
-    updateLootTrackerUI()
-end
+local lastTimerUpdate = 0
 
 function LootTracker.OnLootReceived(eventId, receivedBy, itemName, quantity, soundCategory, lootType, mine,
                                     isPickpocketLoot, questItemIcon, itemId, isStolen)
-    if loots[itemId] == nil then
+    if LootTracker.Data.loots[itemId] == nil then
         return
-        -- loots[itemId] = { quantity = 0, itemName = itemName }
+        -- LootTracker.Data.loots[itemId] = { quantity = 0, itemName = itemName }
     end
 
     if mine then
-        loots[itemId].quantity = loots[itemId].quantity + quantity
+        LootTracker.Data.loots[itemId].quantity = LootTracker.Data.loots[itemId].quantity + quantity
     end
 
-    loots[itemId].groupQuantity = loots[itemId].groupQuantity + quantity
+    LootTracker.Data.loots[itemId].groupQuantity = LootTracker.Data.loots[itemId].groupQuantity + quantity
 
-    updateLootTrackerUI()
+
+    LootTracker.MainWindow.UpdateLootsInfoUI()
+    LootTracker.MainWindow.UpdateMoreInfoUI()
 end
 
 function LootTracker.OnExperienceGain(eventId, reason, level, previousExperience, currentExperience, championPoints)
@@ -74,65 +24,75 @@ function LootTracker.OnExperienceGain(eventId, reason, level, previousExperience
     end
 end
 
-local function InitializeRow(control, data)
-    control:SetText(data.itemName .. ": " .. data.quantity .. " / " .. data.groupQuantity)
+function LootTracker.OnUpdateTimer()
+    if not LootTracker.Data.enabed then return end
+
+    local gameTime = GetGameTimeSeconds();
+    LootTracker.Data.timer = gameTime - lastTimerUpdate + LootTracker.Data.timer
+    lastTimerUpdate = gameTime
+
+    LootTracker.MainWindow.UpdateTimerUI()
+    LootTracker.MainWindow.UpdateMoreInfoUI()
 end
 
 local function reset()
-    timer = 0
-    timerStart = GetGameTimeSeconds()
+    LootTracker.Data.timer = 0
 
-    for k in pairs(loots) do
-        loots[k].quantity = 0
-        loots[k].groupQuantity = 0
+    for k in pairs(LootTracker.Data.loots) do
+        LootTracker.Data.loots[k].quantity = 0
+        LootTracker.Data.loots[k].groupQuantity = 0
     end
 
-    updateLootTrackerUI()
+    LootTracker.MainWindow.UpdateLootsInfoUI()
+    LootTracker.MainWindow.UpdateMoreInfoUI()
+    LootTracker.MainWindow.UpdateTimerUI()
 end
 
-local function OnUpdateTimer()
-    timer = GetGameTimeSeconds() - timerStart
-    local hours = math.floor(timer / 3600)
-    local remainingSeconds = timer % 3600
-    local minutes = math.floor(remainingSeconds / 60)
-    remainingSeconds = remainingSeconds % 60
+local function enable()
+    LootTracker.Data.enabled = true
+    d("enable")
 
-    window:GetNamedChild("Title"):SetText("Loot Tracker (" ..
-    string.format("%02d:%02d:%02d", hours, minutes, remainingSeconds) .. ")")
+    -- Setup Timer
+    lastTimerUpdate = GetGameTimeSeconds()
+    EVENT_MANAGER:RegisterForUpdate(LootTracker.name .. "Update", 1000, LootTracker.OnUpdateTimer)
 
-    if timer > 1 and timer % 60 == 0 then
-        updateTotalCoins()
+    -- Events
+    EVENT_MANAGER:RegisterForEvent(LootTracker.name, EVENT_LOOT_RECEIVED, LootTracker.OnLootReceived)
+    EVENT_MANAGER:RegisterForEvent(LootTracker.name, EVENT_EXPERIENCE_GAIN, LootTracker.OnExperienceGain)
+
+    LootTracker.MainWindow.UpdateVisibility(true)
+end
+
+local function disable()
+    LootTracker.Data.enabled = false
+    d("disable")
+
+    -- Setup Timer
+    lastTimerUpdate = GetGameTimeSeconds()
+    EVENT_MANAGER:UnregisterForUpdate(LootTracker.name .. "Update")
+
+    -- Events
+    EVENT_MANAGER:UnregisterForEvent(LootTracker.name, EVENT_LOOT_RECEIVED)
+    EVENT_MANAGER:UnregisterForEvent(LootTracker.name, EVENT_EXPERIENCE_GAIN)
+
+    LootTracker.MainWindow.UpdateVisibility(false)
+end
+
+local function toggle()
+    if LootTracker.Data.enabled then
+        disable()
+    else
+        enable()
     end
 end
 
 function LootTracker.Load()
-    saveData = LootTracker.saveData
-    timer = 0
-    timerStart = GetGameTimeSeconds()
+    LootTracker.MainWindow.Initialize()
 
-    -- start timer
-    EVENT_MANAGER:RegisterForUpdate(LootTracker.name, 1000, OnUpdateTimer)
-
-    if saveData.window then
-        window:ClearAnchors()
-        window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, saveData.window.x, saveData.window.y)
-        window:SetDimensions(saveData.window.width, saveData.window.height)
-    else
-        saveWindowRect()
+    if LootTracker.Data.enabled then
+        enable()
     end
 
-    window:SetHandler("OnMoveStop", saveWindowRect)
-    window:SetHandler("OnResizeStop", saveWindowRect)
-
-    local fragment = ZO_SimpleSceneFragment:New(window)
-    HUD_SCENE:AddFragment(fragment)
-    HUD_UI_SCENE:AddFragment(fragment)
-
-    local NOTE_TYPE = 1
-    local indexContainer = window:GetNamedChild("Index")
-    ZO_ScrollList_AddDataType(indexContainer, NOTE_TYPE, "LootTrackerIndexTemplate", 20, InitializeRow)
-
-    updateLootTrackerUI()
-
     SLASH_COMMANDS["/ltreset"] = reset
+    SLASH_COMMANDS["/lttoggle"] = toggle
 end
