@@ -50,7 +50,6 @@ end
 
 local function enable()
     LootTracker.Data.enabled = true
-    d("enable")
 
     -- Setup Timer
     lastTimerUpdate = GetGameTimeSeconds()
@@ -65,7 +64,6 @@ end
 
 local function disable()
     LootTracker.Data.enabled = false
-    d("disable")
 
     -- Setup Timer
     lastTimerUpdate = GetGameTimeSeconds()
