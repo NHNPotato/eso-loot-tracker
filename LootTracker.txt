@@ -9,8 +9,7 @@
 ##
 ## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
-lib/Constants.lua
-
+src/Constants.lua
 src/MainWindow.lua
 src/MainWindow.xml
 src/LootTracker.lua
